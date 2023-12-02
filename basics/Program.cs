@@ -1,7 +1,7 @@
 ﻿using System;
 
 
-public class CalculatorConsoleInfo
+class CalculatorConsoleInfo
 {
     public static void CalcMethodConsoleInfo()
     {
@@ -16,33 +16,33 @@ public class CalculatorConsoleInfo
     }
 }
 
-public class Equations
+class Equations
 {
-    public int number1;
-    public int number2;
+    public double number1;
+    public double number2;
 
-    public Equations(int firstNumber, int secondNumber)
+    public Equations(double firstNumber, double secondNumber)
     {
         number1 = firstNumber;
         number2 = secondNumber;
     }
 
-    public int Add()
+    public double Add()
     {
         return number1 + number2;
     }
 
-    public int Sub()
+    public double Sub()
     {
         return number1 - number2;
     }
 
-    public int Divide()
+    public double Divide()
     {
         return number1 / number2;
     }
 
-    public int Multiply()
+    public double Multiply()
     {
         return number1 * number2;
     }
@@ -50,90 +50,80 @@ public class Equations
 
 class Calculator
 {
-    public static int ReadIntData()
+    public static double ReadIntData()
     {
-        int parsedData = 0;
+        double parsedData = 0;
 
         try
         {
-            parsedData = int.Parse(Console.ReadLine());
+            parsedData = double.Parse(Console.ReadLine());
         }
         catch (Exception)
         {
             CalculatorConsoleInfo.ReadDataErrMsg();
             return ReadIntData();
         }
+
         return parsedData;
     }
 
-    public static int GetAnotherNumber(int secondNumber)
+    public static double GetAnotherNumber()
     {
         Console.WriteLine("Podaj kolejna liczbe:");
         return ReadIntData();
     }
 
-    public static void SetCalcMethod(int pickedOption, int secondNumber, int firstNumber, int result)
+    public static double SetCalcMethod(int pickedOption, double secondNumber, double firstNumber, double result)
     {
         switch (pickedOption)
         {
             case 1:
                 {
-                    secondNumber = GetAnotherNumber(secondNumber);
+                    secondNumber = GetAnotherNumber();
                     Equations NewEquations = new(firstNumber, secondNumber);
-                    result = NewEquations.Add();
-                    Console.Clear();
-                    Console.WriteLine("Wynik:" + result);
-                    break;
+                    return NewEquations.Add();
                 }
             case 2:
                 {
-                    secondNumber = GetAnotherNumber(secondNumber);
+                    secondNumber = GetAnotherNumber();
                     Equations NewEquations = new(firstNumber, secondNumber);
-                    result = NewEquations.Sub();
-                    Console.Clear();
-                    Console.WriteLine("Wynik:" + result);
-                    break;
+                    return NewEquations.Sub();
                 }
             case 3:
                 {
-                    secondNumber = GetAnotherNumber(secondNumber);
+                    secondNumber = GetAnotherNumber();
                     Equations NewEquations = new(firstNumber, secondNumber);
-                    result = NewEquations.Divide();
-                    Console.Clear();
-                    Console.WriteLine("Wynik:" + result);
-                    break;
+                    return NewEquations.Divide();
                 }
             case 4:
                 {
-                    secondNumber = GetAnotherNumber(secondNumber);
+                    secondNumber = GetAnotherNumber();
                     Equations NewEquations = new(firstNumber, secondNumber);
-                    result = NewEquations.Multiply();
-                    Console.Clear();
-                    Console.WriteLine("Wynik: " + result);
-                    break;
+                    return NewEquations.Multiply();
                 }
             case 5:
                 {
                     Environment.Exit(0);
-                    break;
+                    return 0;
                 }
             default:
                 {
                     Console.Write("\nNiepoprawna opcja\n");
                     CalculatorConsoleInfo.CalcMethodConsoleInfo();
-                    pickedOption = ReadIntData();
+                    pickedOption = Convert.ToInt32(ReadIntData());
                     SetCalcMethod(pickedOption, secondNumber, firstNumber, result);
-                    break;
+                    return 0;
                 }
         }
     }
 
-    static public void CalculatorLogic(bool firstEquation = true, int oldResult = 0)
+    static public void CalculatorLogic(bool firstEquation = true, double oldResult = 0)
     {
-        int pickedOption = 0;
-        int firstNumber = 0;
-        int secondNumber = 0;
-        int result = oldResult;
+        double firstNumber = oldResult;
+        double secondNumber = 0;
+        double result = 0;
+
+        Console.WriteLine("firstnumber: " + firstNumber);
 
         if (firstEquation)
         {
@@ -141,15 +131,13 @@ class Calculator
 
             firstNumber = ReadIntData();
         }
-        else
-        {
-            firstNumber = result;
-        }
 
         CalculatorConsoleInfo.CalcMethodConsoleInfo();
-        pickedOption = ReadIntData();
+        int pickedOption = Convert.ToInt32(ReadIntData());
 
-        SetCalcMethod(pickedOption, secondNumber, firstNumber, result);
+        result = SetCalcMethod(pickedOption, secondNumber, firstNumber, result);
+        Console.Clear();
+        Console.WriteLine("Wynik:" + result);
 
         CalculatorLogic(firstEquation: false, oldResult: result);
     }
