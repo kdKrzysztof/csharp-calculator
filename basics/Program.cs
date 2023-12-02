@@ -123,8 +123,6 @@ class Calculator
         double secondNumber = 0;
         double result = 0;
 
-        Console.WriteLine("firstnumber: " + firstNumber);
-
         if (firstEquation)
         {
             Console.WriteLine("Podaj pierwsza liczbe\n");
