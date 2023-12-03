@@ -1,6 +1,5 @@
 ﻿using System;
 
-
 class CalculatorConsoleInfo
 {
     public static void DisplayCalculationOptions()
@@ -11,7 +10,7 @@ class CalculatorConsoleInfo
 
     public static void DisplayInvalidInputMessage()
     {
-        Console.WriteLine("\nNieprawidłowa liczba\n");
+        Console.WriteLine("\n!! Wartość Musi być liczbą !!\n");
         Console.WriteLine("Podaj poprawna wartość:\n");
     }
 }
@@ -31,25 +30,42 @@ class Equations
 
     public double Sub() => number1 - number2;
 
-    public double Divide() => number1 / number2;
+    public double Divide() {
+        if(number2 == 0)
+        {
+            throw new Exception("You cannot divide by zero");
+        }
+
+        return number1 / number2;
+    }
 
     public double Multiply() => number1 * number2;
 }
 
 class Calculator
 {
-    private static double ReadIntData()
+    private static double ReadDoubleInput()
     {
         double parsedData = 0;
 
-        try
+        while(!double.TryParse(Console.ReadLine(), out parsedData))
         {
-            parsedData = double.Parse(Console.ReadLine());
-        }
-        catch (Exception)
-        {
+            Console.Clear();
             CalculatorConsoleInfo.DisplayInvalidInputMessage();
-            return ReadIntData();
+        }
+
+        return parsedData;
+    }
+
+    private static int ReadIntOptionInput()
+    {
+        int parsedData = 0;
+
+        while (!int.TryParse(Console.ReadLine(), out parsedData))
+        {
+            Console.Clear();
+            CalculatorConsoleInfo.DisplayInvalidInputMessage();
+            CalculatorConsoleInfo.DisplayCalculationOptions();
         }
 
         return parsedData;
@@ -58,36 +74,57 @@ class Calculator
     private static double GetAnotherNumber()
     {
         Console.WriteLine("Podaj kolejna liczbe:");
-        return ReadIntData();
+        return ReadDoubleInput();
     }
 
-    private static double SetCalcMethod(int pickedOption, double secondNumber, double firstNumber, double result)
+    private static int SelectOperation()
     {
-        switch (pickedOption)
+        CalculatorConsoleInfo.DisplayCalculationOptions();
+        return ReadIntOptionInput();
+    }
+
+    private static double PerformCalculation(int selectedOperation, double firstNumber, double secondNumber = double.NaN)
+    {
+
+        static Equations setEquation(double firstNumber, double secondNumber)
+        {
+
+           if (double.IsNaN(secondNumber))
+            {
+                secondNumber = GetAnotherNumber();
+            }   
+            return new Equations(firstNumber, secondNumber);
+        };
+
+        switch (selectedOperation)
         {
             case 1:
                 {
-                    secondNumber = GetAnotherNumber();
-                    Equations NewEquations = new(firstNumber, secondNumber);
-                    return NewEquations.Add();
+                    var equations = setEquation(firstNumber, secondNumber);
+                    return equations.Add();
                 }
             case 2:
                 {
-                    secondNumber = GetAnotherNumber();
-                    Equations NewEquations = new(firstNumber, secondNumber);
-                    return NewEquations.Sub();
+                    var equations = setEquation(firstNumber, secondNumber);
+                    return equations.Sub();
                 }
             case 3:
                 {
-                    secondNumber = GetAnotherNumber();
-                    Equations NewEquations = new(firstNumber, secondNumber);
-                    return NewEquations.Multiply();
+                    var equations = setEquation(firstNumber, secondNumber);
+                    return equations.Multiply();
                 }
             case 4:
                 {
-                    secondNumber = GetAnotherNumber();
-                    Equations NewEquations = new(firstNumber, secondNumber);
-                    return NewEquations.Divide();
+                    try
+                    {
+                        var equations = setEquation(firstNumber, secondNumber);
+                        return equations.Divide();
+                    } 
+                    catch (Exception)
+                    {
+                        Console.WriteLine("Nie możesz dzielić przez zero");
+                        return PerformCalculation(selectedOperation, firstNumber, secondNumber);
+                    }
                 }
             case 5:
                 {
@@ -97,31 +134,28 @@ class Calculator
             default:
                 {
                     Console.Write("\nNiepoprawna opcja\n");
-                    CalculatorConsoleInfo.DisplayCalculationOptions();
-                    pickedOption = Convert.ToInt32(ReadIntData());
-                    SetCalcMethod(pickedOption, secondNumber, firstNumber, result);
-                    return 0;
+                    selectedOperation = SelectOperation();
+                    return PerformCalculation(selectedOperation, firstNumber, secondNumber);
                 }
         }
     }
 
-    static public void CalculatorLogic(bool firstEquation = true, double oldResult = 0)
+    static void CalculatorLogic(bool firstEquation = true, double oldResult = 0)
     {
         double firstNumber = oldResult;
-        double secondNumber = 0;
         double result = 0;
 
         if (firstEquation)
         {
             Console.WriteLine("Podaj pierwsza liczbe\n");
 
-            firstNumber = ReadIntData();
+            firstNumber = ReadDoubleInput();
         }
 
-        CalculatorConsoleInfo.DisplayCalculationOptions();
-        int pickedOption = Convert.ToInt32(ReadIntData());
+        var selectedOperation = SelectOperation();
 
-        result = SetCalcMethod(pickedOption, secondNumber, firstNumber, result);
+        result = PerformCalculation(selectedOperation, firstNumber);
+
         Console.Clear();
         Console.WriteLine("Wynik:" + result);
 
