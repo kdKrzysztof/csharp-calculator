@@ -3,13 +3,13 @@
 
 class CalculatorConsoleInfo
 {
-    public static void CalcMethodConsoleInfo()
+    public static void DisplayCalculationOptions()
     {
         Console.WriteLine("Wybierz typ liczenia:\n");
         Console.WriteLine("1. Dodawanie\n2. Odejmowanie\n3. Mnożenie\n4. Dzielenie\n5. Wyjście");
     }
 
-    public static void ReadDataErrMsg()
+    public static void DisplayInvalidInputMessage()
     {
         Console.WriteLine("\nNieprawidłowa liczba\n");
         Console.WriteLine("Podaj poprawna wartość:\n");
@@ -18,8 +18,8 @@ class CalculatorConsoleInfo
 
 class Equations
 {
-    public double number1;
-    public double number2;
+    private double number1;
+    private double number2;
 
     public Equations(double firstNumber, double secondNumber)
     {
@@ -27,30 +27,18 @@ class Equations
         number2 = secondNumber;
     }
 
-    public double Add()
-    {
-        return number1 + number2;
-    }
+    public double Add() => number1 + number2;
 
-    public double Sub()
-    {
-        return number1 - number2;
-    }
+    public double Sub() => number1 - number2;
 
-    public double Divide()
-    {
-        return number1 / number2;
-    }
+    public double Divide() => number1 / number2;
 
-    public double Multiply()
-    {
-        return number1 * number2;
-    }
+    public double Multiply() => number1 * number2;
 }
 
 class Calculator
 {
-    public static double ReadIntData()
+    private static double ReadIntData()
     {
         double parsedData = 0;
 
@@ -60,20 +48,20 @@ class Calculator
         }
         catch (Exception)
         {
-            CalculatorConsoleInfo.ReadDataErrMsg();
+            CalculatorConsoleInfo.DisplayInvalidInputMessage();
             return ReadIntData();
         }
 
         return parsedData;
     }
 
-    public static double GetAnotherNumber()
+    private static double GetAnotherNumber()
     {
         Console.WriteLine("Podaj kolejna liczbe:");
         return ReadIntData();
     }
 
-    public static double SetCalcMethod(int pickedOption, double secondNumber, double firstNumber, double result)
+    private static double SetCalcMethod(int pickedOption, double secondNumber, double firstNumber, double result)
     {
         switch (pickedOption)
         {
@@ -93,13 +81,13 @@ class Calculator
                 {
                     secondNumber = GetAnotherNumber();
                     Equations NewEquations = new(firstNumber, secondNumber);
-                    return NewEquations.Divide();
+                    return NewEquations.Multiply();
                 }
             case 4:
                 {
                     secondNumber = GetAnotherNumber();
                     Equations NewEquations = new(firstNumber, secondNumber);
-                    return NewEquations.Multiply();
+                    return NewEquations.Divide();
                 }
             case 5:
                 {
@@ -109,7 +97,7 @@ class Calculator
             default:
                 {
                     Console.Write("\nNiepoprawna opcja\n");
-                    CalculatorConsoleInfo.CalcMethodConsoleInfo();
+                    CalculatorConsoleInfo.DisplayCalculationOptions();
                     pickedOption = Convert.ToInt32(ReadIntData());
                     SetCalcMethod(pickedOption, secondNumber, firstNumber, result);
                     return 0;
@@ -130,7 +118,7 @@ class Calculator
             firstNumber = ReadIntData();
         }
 
-        CalculatorConsoleInfo.CalcMethodConsoleInfo();
+        CalculatorConsoleInfo.DisplayCalculationOptions();
         int pickedOption = Convert.ToInt32(ReadIntData());
 
         result = SetCalcMethod(pickedOption, secondNumber, firstNumber, result);
