@@ -15,154 +15,130 @@ class CalculatorConsoleInfo
     }
 }
 
-class Equations
+namespace basics
 {
-    private double number1;
-    private double number2;
-
-    public Equations(double firstNumber, double secondNumber)
+    class Calculator
     {
-        number1 = firstNumber;
-        number2 = secondNumber;
-    }
-
-    public double Add() => number1 + number2;
-
-    public double Sub() => number1 - number2;
-
-    public double Divide() {
-        if(number2 == 0)
+        private static double ReadDoubleInput()
         {
-            throw new Exception("You cannot divide by zero");
-        }
-
-        return number1 / number2;
-    }
-
-    public double Multiply() => number1 * number2;
-}
-
-class Calculator
-{
-    private static double ReadDoubleInput()
-    {
-        double parsedData = 0;
-
-        while(!double.TryParse(Console.ReadLine(), out parsedData))
-        {
-            Console.Clear();
-            CalculatorConsoleInfo.DisplayInvalidInputMessage();
-        }
-
-        return parsedData;
-    }
-
-    private static int ReadIntOptionInput()
-    {
-        int parsedData = 0;
-
-        while (!int.TryParse(Console.ReadLine(), out parsedData))
-        {
-            Console.Clear();
-            CalculatorConsoleInfo.DisplayInvalidInputMessage();
-            CalculatorConsoleInfo.DisplayCalculationOptions();
-        }
-
-        return parsedData;
-    }
-
-    private static double GetAnotherNumber()
-    {
-        Console.WriteLine("Podaj kolejna liczbe:");
-        return ReadDoubleInput();
-    }
-
-    private static int SelectOperation()
-    {
-        CalculatorConsoleInfo.DisplayCalculationOptions();
-        return ReadIntOptionInput();
-    }
-
-    private static double PerformCalculation(int selectedOperation, double firstNumber, double secondNumber = double.NaN)
-    {
-
-        static Equations setEquation(double firstNumber, double secondNumber)
-        {
-
-           if (double.IsNaN(secondNumber))
+            double parsedData = 0;
+    
+            while(!double.TryParse(Console.ReadLine(), out parsedData))
             {
-                secondNumber = GetAnotherNumber();
-            }   
-            return new Equations(firstNumber, secondNumber);
-        };
-
-        switch (selectedOperation)
+                Console.Clear();
+                CalculatorConsoleInfo.DisplayInvalidInputMessage();
+            }
+    
+            return parsedData;
+        }
+    
+        private static int ReadIntOptionInput()
         {
-            case 1:
+            int parsedData = 0;
+    
+            while (!int.TryParse(Console.ReadLine(), out parsedData))
+            {
+                Console.Clear();
+                CalculatorConsoleInfo.DisplayInvalidInputMessage();
+                CalculatorConsoleInfo.DisplayCalculationOptions();
+            }
+    
+            return parsedData;
+        }
+    
+        private static double GetAnotherNumber()
+        {
+            Console.WriteLine("Podaj kolejna liczbe:");
+            return ReadDoubleInput();
+        }
+    
+        private static int SelectOperation()
+        {
+            CalculatorConsoleInfo.DisplayCalculationOptions();
+            return ReadIntOptionInput();
+        }
+    
+        private static double PerformCalculation(int selectedOperation, double firstNumber, double secondNumber = double.NaN)
+        {
+    
+            static Equations setEquation(double firstNumber, double secondNumber)
+            {
+    
+               if (double.IsNaN(secondNumber))
                 {
-                    var equations = setEquation(firstNumber, secondNumber);
-                    return equations.Add();
-                }
-            case 2:
-                {
-                    var equations = setEquation(firstNumber, secondNumber);
-                    return equations.Sub();
-                }
-            case 3:
-                {
-                    var equations = setEquation(firstNumber, secondNumber);
-                    return equations.Multiply();
-                }
-            case 4:
-                {
-                    try
+                    secondNumber = GetAnotherNumber();
+                }   
+                return new Equations(firstNumber, secondNumber);
+            };
+    
+            switch (selectedOperation)
+            {
+                case 1:
                     {
                         var equations = setEquation(firstNumber, secondNumber);
-                        return equations.Divide();
-                    } 
-                    catch (Exception)
+                        return equations.Add();
+                    }
+                case 2:
                     {
-                        Console.WriteLine("Nie możesz dzielić przez zero");
+                        var equations = setEquation(firstNumber, secondNumber);
+                        return equations.Sub();
+                    }
+                case 3:
+                    {
+                        var equations = setEquation(firstNumber, secondNumber);
+                        return equations.Multiply();
+                    }
+                case 4:
+                    {
+                        try
+                        {
+                            var equations = setEquation(firstNumber, secondNumber);
+                            return equations.Divide();
+                        } 
+                        catch (Exception)
+                        {
+                            Console.WriteLine("Nie możesz dzielić przez zero");
+                            return PerformCalculation(selectedOperation, firstNumber, secondNumber);
+                        }
+                    }
+                case 5:
+                    {
+                        Environment.Exit(0);
+                        return 0;
+                    }
+                default:
+                    {
+                        Console.Write("\nNiepoprawna opcja\n");
+                        selectedOperation = SelectOperation();
                         return PerformCalculation(selectedOperation, firstNumber, secondNumber);
                     }
-                }
-            case 5:
-                {
-                    Environment.Exit(0);
-                    return 0;
-                }
-            default:
-                {
-                    Console.Write("\nNiepoprawna opcja\n");
-                    selectedOperation = SelectOperation();
-                    return PerformCalculation(selectedOperation, firstNumber, secondNumber);
-                }
+            }
         }
-    }
-
-    static void CalculatorLogic(bool firstEquation = true, double oldResult = 0)
-    {
-        double firstNumber = oldResult;
-        double result = 0;
-
-        if (firstEquation)
+    
+        static void CalculatorLogic(bool firstEquation = true, double oldResult = 0)
         {
-            Console.WriteLine("Podaj pierwsza liczbe\n");
-
-            firstNumber = ReadDoubleInput();
+            double firstNumber = oldResult;
+            double result = 0;
+    
+            if (firstEquation)
+            {
+                Console.WriteLine("Podaj pierwsza liczbe\n");
+    
+                firstNumber = ReadDoubleInput();
+            }
+    
+            var selectedOperation = SelectOperation();
+    
+            result = PerformCalculation(selectedOperation, firstNumber);
+    
+            Console.Clear();
+            Console.WriteLine("Wynik:" + result);
+    
+            CalculatorLogic(firstEquation: false, oldResult: result);
         }
-
-        var selectedOperation = SelectOperation();
-
-        result = PerformCalculation(selectedOperation, firstNumber);
-
-        Console.Clear();
-        Console.WriteLine("Wynik:" + result);
-
-        CalculatorLogic(firstEquation: false, oldResult: result);
-    }
-    static void Main()
-    {
-        CalculatorLogic();
+        static void Main()
+        {
+            CalculatorLogic();
+        }
     }
 }
